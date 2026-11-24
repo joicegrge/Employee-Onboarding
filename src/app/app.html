@@ -1,0 +1,281 @@
+<main class="page-shell">
+  <header class="page-header">
+    <p class="eyebrow">PEOPLE OPERATIONS</p>
+    <h1>Employee onboarding</h1>
+    <p class="intro">Enter the employee details below to complete the onboarding record.</p>
+  </header>
+
+  @if (successMessage()) {
+    <p class="success-message" role="status">{{ successMessage() }}</p>
+  }
+
+  <form class="onboarding-form" [formRoot]="onboardingForm">
+    <section class="form-section" aria-labelledby="personal-heading">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">01</span>
+        <div>
+          <h2 id="personal-heading">Personal</h2>
+          <p>Basic employee and contact details.</p>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input id="firstName" autocomplete="given-name" [formField]="onboardingForm.firstName" />
+          @if ((submitted() || onboardingForm.firstName().touched()) && onboardingForm.firstName().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.firstName().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="lastName">Last name</label>
+          <input id="lastName" autocomplete="family-name" [formField]="onboardingForm.lastName" />
+          @if ((submitted() || onboardingForm.lastName().touched()) && onboardingForm.lastName().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.lastName().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="email">Employee email</label>
+          <input id="email" type="email" autocomplete="email" [formField]="onboardingForm.email" />
+          @if (onboardingForm.email().pending()) {
+            <p class="field-status" role="status">Checking…</p>
+          }
+          @if ((submitted() || onboardingForm.email().touched()) && onboardingForm.email().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.email().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input id="phone" type="tel" inputmode="numeric" autocomplete="tel" [formField]="onboardingForm.phone" />
+          @if ((submitted() || onboardingForm.phone().touched()) && onboardingForm.phone().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.phone().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="dateOfBirth">Date of birth</label>
+          <input id="dateOfBirth" type="date" autocomplete="bday" [formField]="onboardingForm.dateOfBirth" (input)="limitDateOfBirthYear($event)" />
+          @if ((submitted() || onboardingForm.dateOfBirth().touched()) && onboardingForm.dateOfBirth().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.dateOfBirth().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" aria-labelledby="employment-heading">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">02</span>
+        <div>
+          <h2 id="employment-heading">Employment</h2>
+          <p>Role, dates, and reporting manager.</p>
+        </div>
+      </div>
+
+      <div class="field-grid">
+        <div class="field">
+          <label for="employmentType">Employment type</label>
+          <select id="employmentType" [formField]="onboardingForm.employmentType" (change)="onEmploymentTypeChange($event)">
+            @for (employmentType of employmentTypes; track employmentType) {
+              <option [value]="employmentType">{{ employmentType }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="department">Department</label>
+          <select id="department" [formField]="onboardingForm.department" (change)="clearDesignation()">
+            <option value="">Select department</option>
+            @for (department of departments; track department) {
+              <option [value]="department">{{ department }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="designation">Designation</label>
+          <select id="designation" [formField]="onboardingForm.designation">
+            <option value="">Select designation</option>
+            @for (designation of availableDesignations(); track designation) {
+              <option [value]="designation">{{ designation }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="joiningDate">Joining date</label>
+          <input id="joiningDate" type="date" [formField]="onboardingForm.joiningDate" />
+          @if ((submitted() || onboardingForm.joiningDate().touched()) && onboardingForm.joiningDate().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.joiningDate().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        @if (isFixedTerm()) {
+          <div class="field">
+            <label for="endDate">End date</label>
+            <input id="endDate" type="date" [formField]="onboardingForm.endDate" />
+            @if ((submitted() || onboardingForm.endDate().touched()) && onboardingForm.endDate().invalid()) {
+              <ul class="field-errors">
+                @for (error of onboardingForm.endDate().errors(); track error.kind) {
+                  <li>{{ error.message }}</li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        <div class="field">
+          <label for="managerEmail">Manager email</label>
+          <input id="managerEmail" type="email" autocomplete="email" [formField]="onboardingForm.managerEmail" />
+          @if ((submitted() || onboardingForm.managerEmail().touched()) && onboardingForm.managerEmail().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.managerEmail().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" aria-labelledby="address-heading">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">03</span>
+        <div>
+          <h2 id="address-heading">Address</h2>
+          <p>Employee mailing address.</p>
+        </div>
+      </div>
+
+      <div class="field-grid address-grid">
+        <div class="field field-wide">
+          <label for="addressLine1">Address line 1</label>
+          <input id="addressLine1" autocomplete="address-line1" [formField]="onboardingForm.address.line1" />
+          @if ((submitted() || onboardingForm.address.line1().touched()) && onboardingForm.address.line1().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.address.line1().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="city">City</label>
+          <input id="city" autocomplete="address-level2" [formField]="onboardingForm.address.city" />
+          @if ((submitted() || onboardingForm.address.city().touched()) && onboardingForm.address.city().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.address.city().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+
+        <div class="field">
+          <label for="pin">PIN</label>
+          <input id="pin" inputmode="numeric" autocomplete="postal-code" [formField]="onboardingForm.address.pin" />
+          @if ((submitted() || onboardingForm.address.pin().touched()) && onboardingForm.address.pin().invalid()) {
+            <ul class="field-errors">
+              @for (error of onboardingForm.address.pin().errors(); track error.kind) {
+                <li>{{ error.message }}</li>
+              }
+            </ul>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" aria-labelledby="skills-heading">
+      <div class="section-heading skills-heading">
+        <span class="section-number" aria-hidden="true">04</span>
+        <div>
+          <h2 id="skills-heading">Skills</h2>
+          <p>Add 2–6 skills and rate each one.</p>
+        </div>
+        <button class="secondary-button add-skill-button" type="button" (click)="addSkill()" [disabled]="model().skills.length >= 6">
+          Add skill
+        </button>
+      </div>
+
+      @if ((submitted() || onboardingForm.skills().touched() || hasTouchedSkill()) && onboardingForm.skills().invalid()) {
+        <ul class="field-errors collection-errors">
+          @for (error of onboardingForm.skills().errors(); track error.kind) {
+            <li>{{ error.message }}</li>
+          }
+        </ul>
+      }
+
+      <div class="skills-list">
+        @for (skill of onboardingForm.skills; track skill; let index = $index) {
+          <div class="skill-row">
+            <div class="field">
+              <label [for]="'skill-name-' + index">Skill name</label>
+              <input [id]="'skill-name-' + index" [formField]="onboardingForm.skills[index].name" />
+              @if ((submitted() || onboardingForm.skills[index].name().touched()) && onboardingForm.skills[index].name().invalid()) {
+                <ul class="field-errors">
+                  @for (error of onboardingForm.skills[index].name().errors(); track error.kind) {
+                    <li>{{ error.message }}</li>
+                  }
+                </ul>
+              }
+            </div>
+
+            <div class="field rating-field">
+              <span class="field-label">Rating</span>
+              <app-star-rating [formField]="onboardingForm.skills[index].rating" />
+              @if ((submitted() || onboardingForm.skills[index].rating().touched()) && onboardingForm.skills[index].rating().invalid()) {
+                <ul class="field-errors">
+                  @for (error of onboardingForm.skills[index].rating().errors(); track error.kind) {
+                    <li>{{ error.message }}</li>
+                  }
+                </ul>
+              }
+            </div>
+
+            <button class="remove-button" type="button" (click)="removeSkill(index)" [attr.aria-label]="'Remove skill ' + (index + 1)">
+              Remove
+            </button>
+          </div>
+        }
+      </div>
+    </section>
+
+    <footer class="form-footer">
+      <p class="form-note">Fields are checked as you complete the form.</p>
+      <button class="primary-button" type="submit" [disabled]="onboardingForm().invalid() || onboardingForm.email().pending() || onboardingForm().submitting()">
+        @if (onboardingForm.email().pending()) {
+          Checking email…
+        } @else {
+          Submit onboarding
+        }
+      </button>
+    </footer>
+  </form>
+</main>
