@@ -177,6 +177,11 @@ The following are manual scenarios for checking the assignment behavior. They ar
 - [x] Simulates the email endpoint with an HTTP interceptor and an 800 ms response delay.
 - [x] Gates submission on validity and pending work, then shows the employee's full name and resets the form.
 
+## Screenshot
+
+<img width="1906" height="905" alt="image" src="https://github.com/user-attachments/assets/fa9e9ba0-ae4c-43a4-96e3-c9de6c8aee0e" />
+
+
 ## Scope
 
 This project implements the Employee Onboarding assignment as a single-page form. Email availability is simulated locally by an HTTP interceptor; there is no real backend or database.
